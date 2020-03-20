@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../libs/three.js"></script>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="WebGl-output"></div>
+    <script>
+      window.onload = () => {
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(
+          45,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          1000
+        );
+
+        // 지정된 위치로 부터 장면을 조명한다.
+        var spotLight = new THREE.SpotLight(0xffffff);
+        spotLight.position.set(-40, 60, -10);
+        scene.add(spotLight);
+
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor(0xeeeeee);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // Material을 모두 MeshLambertMaterial로 변경해준다.
+        // MeshLambertMaterial은 렌더링될 때 Three.js에서 광원을 제공하는 물질이다.
+        {
+          var planeGeometry = new THREE.PlaneGeometry(60, 20);
+          var planeMatetial = new THREE.MeshLambertMaterial({
+            color: 0xcccccc
+          });
+          var plane = new THREE.Mesh(planeGeometry, planeMatetial);
+
+          plane.rotation.x = -0.5 * Math.PI;
+          plane.position.x = 15;
+          plane.position.y = 0;
+          plane.position.z = 0;
+          scene.add(plane);
+
+          var cubGeometry = new THREE.BoxGeometry(4, 4, 4);
+          var cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+          var cube = new THREE.Mesh(cubGeometry, cubeMaterial);
+
+          cube.position.x = -4;
+          cube.position.y = 3;
+          cube.position.z = 0;
+
+          scene.add(cube);
+
+          var sphereGeometry = new THREE.SphereGeometry(4, 20, 20);
+          var sphereMaterial = new THREE.MeshLambertMaterial({
+            color: 0x7777ff
+          });
+          var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+
+          sphere.position.x = 20;
+          sphere.position.y = 4;
+          sphere.position.z = 2;
+
+          scene.add(sphere);
+        }
+
+        // 그림자 설정
+        {
+          spotLight.castShadow = true;
+          renderer.shadowMap.enabled = true;
+          plane.receiveShadow = true;
+          cube.castShadow = true;
+          sphere.castShadow = true;
+        }
+
+        camera.position.x = -30;
+        camera.position.y = 40;
+        camera.position.z = 30;
+        camera.lookAt(scene.position);
+
+        document
+          .getElementById("WebGl-output")
+          .appendChild(renderer.domElement);
+        renderer.render(scene, camera);
+      };
+    </script>
+  </body>
+</html>
